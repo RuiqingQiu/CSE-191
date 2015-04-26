@@ -289,19 +289,9 @@ import matplotlib.image as mpimg
 from scipy import misc
 from scipy import ndimage
 
-# image = mpimg.imread("test22.png")
-# height = image.shape[0]
-# width = image.shape[1]
 
-# image1 = image
-# mpimg.imsave("test23.png", image)
-# image = mpimg.imread("test23.png")
-# for a, b in zip(image1, image):
-#     print "a ", a
-#     print "b ", b
-
-
-# This function is for convert a 256 bit to string representation of bit
+# This function is for convert 0 to 1 -> 0 to 255 values and its string representation of bit
+# Eg. input: 1 -> 255 -> output: '11111111'
 def color_to_string(value):
     value = int(value * 255.0)
     bin8 = lambda x : ''.join(reversed( [str((x >> i) & 1) for i in range(8)] ))
