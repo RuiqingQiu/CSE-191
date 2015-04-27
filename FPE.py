@@ -313,24 +313,23 @@ K = '012F' * 8
 ffxObj = new('0000'*8,radix=2)
 # Tweak parameter
 T = FFXInteger('0'*8,radix=2, blocksize=8)
-# Message
-X = FFXInteger(color_to_string(255),radix=2, blocksize=4)
-C = ffxObj.encrypt(T, X)
-Y = ffxObj.decrypt(T, C)
 
+plain_text = ''
 for j in range(0, height):
     for i in range(0, width):
-        print j*width + i
-        print "image , ", image[j][i]
-        X = [ffxObj.encrypt(T, FFXInteger(color_to_string(k),radix=2, blocksize=4)) for k in image[j][i]]
-        print "X , ", X
-
-        X = map(str, X)
-        if dimension == 4:
-            image[j][i] = [string_to_color(X[0]),string_to_color(X[1]),string_to_color(X[2]), string_to_color(X[3])]
-        else:
-            image[j][i] = [string_to_color(X[0]),string_to_color(X[1]),string_to_color(X[2])]
-        print "new image, ", image[j][i]
+        # print j*width + i
+        # print "image , ", image[j][i]
+        for k in image[j][i]:
+            plain_text += color_to_string(k)
+print plain_text
+X =  FFXInteger(plain_text,radix=2, blocksize=8)
+X = ffxObj.encrypt(T, X)
+print X
+for j in range(0, height):
+    for i in range(0, width):
+         image[j][i] = [string_to_color(str(X[0:8])),string_to_color(str(X[8:16])),string_to_color(str(X[16:24])), string_to_color(str(X[24:32]))]
+         X = X[32:]
+print "Encryption done"
 
 plt.imshow(image)
 misc.imsave('encrypt.png', image)
@@ -350,18 +349,18 @@ T = FFXInteger('0'*8,radix=2, blocksize=8)
 # X = FFXInteger(color_to_string(255),radix=2, blocksize=4)
 # C = ffxObj.encrypt(T, X)
 # Y = ffxObj.decrypt(T, C)
-
+plain_text = ''
 for j in range(0, height):
     for i in range(0, width):
-        print j*width + i
-        Y = [ffxObj.decrypt(T, FFXInteger(color_to_string(k),radix=2, blocksize=4)) for k in image[j][i]]
-        print "Y, ", Y
-        Y = map(str,Y)
-        if dimension == 4:
-            image[j][i] = [string_to_color(Y[0]),string_to_color(Y[1]),string_to_color(Y[2]), string_to_color(Y[3])]
-        else:
-            image[j][i] = [string_to_color(Y[0]),string_to_color(Y[1]),string_to_color(Y[2])]
-        print image[j][i]
+        for k in image[j][i]:
+            plain_text += color_to_string(k)
+Y = FFXInteger(plain_text,radix=2, blocksize=8)
+Y = ffxObj.decrypt(T, Y)
+for j in range(0, height):
+    for i in range(0, width):
+        image[j][i] = [string_to_color(str(Y[0:8])),string_to_color(str(Y[8:16])),string_to_color(str(Y[16:24])), string_to_color(str(Y[24:32]))]
+        Y = Y[32:]
+
 plt.imshow(image)
 misc.imsave('decrypt.png', image)
 
