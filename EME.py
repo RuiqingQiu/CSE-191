@@ -19,16 +19,18 @@ def EME_E(T,K,P):
 
     # create a AES block cipher, use ECB mode
     cipher = AES.new(K,AES.MODE_ECB)
-
+    # Initial vector
     IV = ''
     for i in range(0,n):
         IV = IV + '0'
     print "IV is ", IV
     print "IV length is ", len(IV)
 
-    # TO DO : L needs to time 2 later ! 
+    # TO DO : L needs to time 2 later !
     L =  cipher.encrypt(IV)
-    print "L is ", L 
+    #print "L before shift is ", L
+    #L = shift_left(L, 1)
+    print "L is ", L
 
     count = 0
     PPP_list = [] # store all the PPP obtained
@@ -40,7 +42,7 @@ def EME_E(T,K,P):
         PP = strxor.strxor(P_i,L)
         PPP = cipher.encrypt(PP)
         PPP_list.append(PPP)
-    
+
     SP = " " * 16 # empty string
     print "length of PPP_list items ",len(PPP_list[0])
     print "legnth os PPP_list is ",len(PPP_list)
@@ -52,31 +54,31 @@ def EME_E(T,K,P):
 
     MC = cipher.encrypt(MP)
     M = strxor.strxor(MP,MC)
-    
+
     CCC_list = [" "]* m
     for i in range(1,len(PPP_list)):
         #CCC_list[i] = strxor.strxor(PPP_list[i],pow(2,i-1)*M)
         CCC_list[i] = strxor.strxor(PPP_list[i], M)
-        
-    SC = " " * 16 
+
+    SC = " " * 16
     for i in range(1,len(CCC_list)):
         SC = strxor.strxor(SC,CCC_list[i])
     CCC_list[0] = strxor.strxor(MC,SC)
     CCC_list[0] = strxor.strxor(CCC_list[0],T)
-    
+
     C_list = []
     for i in range(0,len(CCC_list)):
         CC = cipher.encrypt(CCC_list[i])
         #C = strxor(CC,pow(2, i) * L)
         C = strxor.strxor(CC, L)
         C_list.append(C)
-        
-        
+
+
     ciphertext = ""
     for i in range (0,len(C_list)):
         ciphertext = ciphertext + C_list[i]
-        
-    return ciphertext   
+
+    return ciphertext
 
 # decryption of EME, C is the ciphertext
 def EME_D(T,K,C):
@@ -96,9 +98,9 @@ def EME_D(T,K,C):
     print "IV is ", IV
     print "IV length is ", len(IV)
 
-    # TO DO : L needs to time 2 later ! 
+    # TO DO : L needs to time 2 later !
     L =  cipher.encrypt(IV)
-    print "L is ", L 
+    print "L is ", L
 
     count = 0
     CCC_list = [] # store all the PPP obtained
@@ -110,8 +112,8 @@ def EME_D(T,K,C):
         CC = strxor.strxor(C_i,L)
         CCC = cipher.decrypt(CC)
         CCC_list.append(CCC)
-    
-    SC = " " * 16 
+
+    SC = " " * 16
     for i in range(1,len(CCC_list)):
         SC = strxor.strxor(SC,CCC_list[i])
 
@@ -127,7 +129,7 @@ def EME_D(T,K,C):
     for i in range(1,len(CCC_list)):
         PPP = strxor.strxor(CCC_list[i],M)
         PPP_list[i] = PPP
-    
+
     SP = " " * n
     for i in range(1,len(PPP_list)):
         SP = strxor.strxor(PPP_list[i],SP)
@@ -157,10 +159,32 @@ encryption_suite = AES.new('This is a key123', AES.MODE_CBC, 'This is an IV456')
 T = os.urandom(16)
 K = os.urandom(16)
 P = os.urandom(32)
-#print "plantext is ", P 
 
-print "length of the plaintext ",len("A really secret message. Not for prying eyes.   ")
-cipher_text = EME_E(T,K,"A really secret message. Not for prying eyes.   ")
+def shift_left(input_string,num_of_bits):
+    # convert input string to binary string
+    binary_str = ''.join('{0:08b}'.format(ord(x), 'b') for x in input_string)
+    print int(binary_str,2)
+    print int(binary_str,2) << num_of_bits
+    # shift and convert back to unicode string
+    binary_str = "{0:b}".format(int(binary_str, 2) << num_of_bits)
+    # fill in 0s in front
+    while len(binary_str) % 8 != 0:
+        binary_str = '0' + binary_str
+    # convert back to unicode string
+    bytes_lst = []
+    i = 0
+    while i < len(binary_str):
+        print binary_str[i:i+8]
+        bytes_lst.append(int(binary_str[i:i+8],2))
+        i = i + 8
+    new_str = ''.join(map(chr,bytes_lst))
+    return new_str
+
+st = "4321"
+print (shift_left(st, 1))
+
+print "length of the plaintext ",len("A really secret message. Not for prying eyes.  \0\0\n hellohellohel")
+cipher_text = EME_E(T,K,"A really secret message. Not for prying eyes.  \0\0\n hellohellohel")
 print "cipher_text is ", cipher_text
 print "length of cipher_text is ", len(cipher_text)
 decipered_text = EME_D(T,K,cipher_text)
