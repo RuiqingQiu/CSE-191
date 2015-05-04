@@ -168,14 +168,7 @@ T = os.urandom(16)
 K = os.urandom(16)
 P = os.urandom(32)
 
-print T
-print K
-print P
 def shift_left(input_string,num_of_bits):
-    bytes_tmp = []
-    for x in input_string:
-        bytes_tmp.append(ord(x))
-    print bytes_tmp
     # convert input string to binary string
     binary_str = ''.join('{0:08b}'.format(ord(x), 'b') for x in input_string)
     # print int(binary_str,2)
@@ -183,13 +176,13 @@ def shift_left(input_string,num_of_bits):
     # shift and convert back to unicode string
     # print int(binary_str, 2) << num_of_bits
     a = len(binary_str)
-    print "shift left by ", num_of_bits
-    print binary_str
-    print len(binary_str)
+    # print "shift left by ", num_of_bits
+    # print binary_str
+    # print len(binary_str)
     binary_str = "{0:b}".format(int(binary_str, 2) << num_of_bits)
-    print binary_str
+    # print binary_str
     b = len(binary_str)
-    print len(binary_str)
+    # print len(binary_str)
     # shift out bits, python doesn't handle this
     if a < b:
         binary_str = binary_str[num_of_bits:]
@@ -205,7 +198,6 @@ def shift_left(input_string,num_of_bits):
         # print binary_str[i:i+8]
         bytes_lst.append(int(binary_str[i:i+8],2))
         i = i + 8
-    print bytes_lst
     new_str = ''.join(map(chr,bytes_lst))
     return new_str
 
