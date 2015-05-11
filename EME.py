@@ -198,7 +198,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from scipy import misc
 from scipy import ndimage
-image = mpimg.imread("test22.png")
+image = mpimg.imread("Android.png")
 height = image.shape[0]
 width = image.shape[1]
 
