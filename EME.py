@@ -150,18 +150,11 @@ def EME_D(T,K,C):
         P = strxor.strxor(PP,shift_left(L,i))
         P_list.append(P)
 
-    plaintext = " "
+    plaintext = ""
     for i in range(0,len(P_list)):
         plaintext = plaintext + P_list[i]
 
     return plaintext
-
-
-# Encryption
-encryption_suite = AES.new('This is a key123', AES.MODE_CBC, 'This is an IV456')
-# message length must a multiple of 16 bytes, defined block size in AES
-# cipher_text is str type
-# cipher_text = encryption_suite.encrypt("A really secret message. Not for prying eyes.   ")
 
 # randomly initiate T
 T = os.urandom(16)
@@ -201,15 +194,57 @@ def shift_left(input_string,num_of_bits):
     new_str = ''.join(map(chr,bytes_lst))
     return new_str
 
-print "length of the plaintext ",len("A really secret message. Not for prying eyes.   ")
-cipher_text = EME_E(T,K,"A really secret message. Not for prying eyes.   ")
-print "cipher_text is ", cipher_text
-print "length of cipher_text is ", len(cipher_text)
-decipered_text = EME_D(T,K,cipher_text)
-print "deciphered text is ", decipered_text
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from scipy import misc
+from scipy import ndimage
+image = mpimg.imread("test22.png")
+height = image.shape[0]
+width = image.shape[1]
 
-'''
-# Decryption
-decryption_suite = AES.new('This is a key123', AES.MODE_CBC, 'This is an IV456')
-plain_text = decryption_suite.decrypt(cipher_text)
-'''
+dimension = len(image[0][0])
+print "Image have this many of color channel ", dimension
+print "Total number of pixels: ", width * height
+
+message = ""
+for j in range(0, height):
+    for i in range(0, width):
+        # message = message + str(image[j][i][0], image[j][i][1])
+        for k in image[j][i]:
+            # print bytearray(int(round(k * 255.0)))
+            message = message + str(bytearray([int(round(k * 255.0))]))
+print message
+
+print "length of the plaintext ",len(message)
+cipher_text = EME_E(T,K, message)
+print "cipher_text is ", cipher_text
+print "len of cipher ", len(cipher_text)
+print "length of cipher_text is ", len(cipher_text)
+
+for j in range(0, height):
+    for i in range(0, width):
+        image[j][i] = [ord(cipher_text[0])/255.0, ord(cipher_text[1])/255.0, ord(cipher_text[2])/255.0, ord(cipher_text[3])/255.0]
+        cipher_text = cipher_text[4:]
+plt.imshow(image)
+misc.imsave('encrypt.png', image)
+plt.show()
+
+message = ""
+for j in range(0, height):
+    for i in range(0, width):
+        # message = message + str(image[j][i][0], image[j][i][1])
+        for k in image[j][i]:
+            # print bytearray(int(round(k * 255.0)))
+            message = message + str(bytearray([int(round(k * 255.0))]))
+
+decipered_text = EME_D(T,K,message)
+print "deciphered text is ", decipered_text
+print "len of decipher ", len(decipered_text)
+
+for j in range(0, height):
+    for i in range(0, width):
+        image[j][i] = [ord(decipered_text[0])/255.0, ord(decipered_text[1])/255.0, ord(decipered_text[2])/255.0, ord(decipered_text[3])/255.0]
+        decipered_text = decipered_text[4:]
+plt.imshow(image)
+misc.imsave('decrypt.png', image)
+plt.show()
