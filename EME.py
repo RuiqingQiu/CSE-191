@@ -116,7 +116,6 @@ def EME_D(T,K,C):
         C_i = C[count * n :i*n]
         count = count + 1
         # TO DO version : PP = strxor_c(P_i, pow(2,i-1) * L)
-        print "C_i is ", C_i
         CC = strxor.strxor(C_i, shift_left(L, i-1))
         CCC = cipher.decrypt(CC)
         CCC_list.append(CCC)
@@ -212,7 +211,9 @@ from scipy import ndimage
 # print cipher_text
 # print EME_D(T,K,cipher_text)
 
-image = mpimg.imread("test22.png")
+# image = mpimg.imread("Android.png")
+# image = mpimg.imread("test22.png")
+image = mpimg.imread("test9.png")
 height = image.shape[0]
 width = image.shape[1]
 

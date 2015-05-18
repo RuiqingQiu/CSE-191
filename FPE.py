@@ -299,10 +299,10 @@ def color_to_string(value):
 
 # This function is for convert bit string to integer
 def string_to_color(str_value):
-    return int(str_value, 2)
+    return int(str_value, 2)/255.0
 
 
-image = mpimg.imread("test22.png")
+image = mpimg.imread("test9.png")
 height = image.shape[0]
 width = image.shape[1]
 dimension = len(image[0][0])
@@ -333,7 +333,7 @@ print "Encryption done"
 
 plt.imshow(image)
 misc.imsave('encrypt.png', image)
-#plt.show()
+plt.show()
 
 image = mpimg.imread('encrypt.png')
 
@@ -363,4 +363,5 @@ for j in range(0, height):
 
 plt.imshow(image)
 misc.imsave('decrypt.png', image)
+plt.show()
 
