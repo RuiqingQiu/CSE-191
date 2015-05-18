@@ -45,8 +45,8 @@ def EME_E(T,K,P):
         P_i = P[count * n :i*n]
         count = count + 1
         # TO DO version : PP = strxor_c(P_i, pow(2,i-1) * L)
-        print "P_i is ", P_i
-        PP = strxor.strxor(P_i,shift_left(L,i-1))
+        # print "P_i is ", P_i
+        PP = strxor.strxor(P_i, shift_left(L,i-1))
         PPP = cipher.encrypt(PP)
         PPP_list.append(PPP)
 
@@ -117,7 +117,7 @@ def EME_D(T,K,C):
         count = count + 1
         # TO DO version : PP = strxor_c(P_i, pow(2,i-1) * L)
         print "C_i is ", C_i
-        CC = strxor.strxor(C_i,shift_left(L,i-1))
+        CC = strxor.strxor(C_i, shift_left(L, i-1))
         CCC = cipher.decrypt(CC)
         CCC_list.append(CCC)
 
@@ -162,6 +162,7 @@ K = os.urandom(16)
 P = os.urandom(32)
 
 def shift_left(input_string,num_of_bits):
+    input_length = len(input_string)
     # convert input string to binary string
     binary_str = ''.join('{0:08b}'.format(ord(x), 'b') for x in input_string)
     # print int(binary_str,2)
@@ -169,25 +170,33 @@ def shift_left(input_string,num_of_bits):
     # shift and convert back to unicode string
     # print int(binary_str, 2) << num_of_bits
     a = len(binary_str)
+    firstbit = binary_str[0]
     # print "shift left by ", num_of_bits
     # print binary_str
     # print len(binary_str)
     binary_str = "{0:b}".format(int(binary_str, 2) << num_of_bits)
     # print binary_str
     b = len(binary_str)
-    # print len(binary_str)
     # shift out bits, python doesn't handle this
-    if a < b:
-        binary_str = binary_str[num_of_bits:]
+    if b > 128:
+        binary_str = binary_str[-128:]
     # if old string is longer than the current one, 0s are ignored by python
-    elif a > b:
-        while(len(binary_str) % 8 != 0):
+    elif b < 128:
+        while(len(binary_str) != 128):
             binary_str = '0' + binary_str
-    
+    const87 = '{0:0128b}'.format(87)
+    # if first bit is 0 then do nothing
+    if firstbit == '1':
+        result = ""
+        #print "before ", binary_str
+        for i in range(0, 128):
+            result = result + (str(int(binary_str[i]) ^ int(const87[i])))
+        #print "result ", result
+        binary_str = result
     # convert back to unicode string
     bytes_lst = []
     i = 0
-    while i < len(binary_str):
+    while i < 128:
         # print binary_str[i:i+8]
         bytes_lst.append(int(binary_str[i:i+8],2))
         i = i + 8
@@ -198,7 +207,12 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from scipy import misc
 from scipy import ndimage
-image = mpimg.imread("Android.png")
+
+# cipher_text = EME_E(T, K, "A really secret message. Not for prying eyes.   ")
+# print cipher_text
+# print EME_D(T,K,cipher_text)
+
+image = mpimg.imread("test22.png")
 height = image.shape[0]
 width = image.shape[1]
 
