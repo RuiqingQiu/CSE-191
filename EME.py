@@ -157,6 +157,7 @@ def EME_D(T,K,C):
 
 # randomly initiate T
 T = os.urandom(16)
+T_copy = T
 K = os.urandom(16)
 P = os.urandom(32)
 
@@ -213,6 +214,7 @@ from scipy import ndimage
 
 # image = mpimg.imread("Android.png")
 # image = mpimg.imread("test22.png")
+# image = mpimg.imread("Android.png")
 image = mpimg.imread("test9.png")
 height = image.shape[0]
 width = image.shape[1]
@@ -230,12 +232,37 @@ for j in range(0, height):
             message = message + str(bytearray([int(round(k * 255.0))]))
 print message
 
-print "length of the plaintext ",len(message)
-cipher_text = EME_E(T,K, message)
-print "cipher_text is ", cipher_text
+cipher_text = ""
+index = 0
+while index < len(message):
+    if index + 16*128 > len(message):
+         cipher_text = cipher_text + EME_E(T,K,message[index:len(message)])
+         print "break here"
+         break
+    cipher_text = cipher_text + EME_E(T,K,message[index:index+16*128])
+    print index
+    index = index + 16*128
+    
+    binary_str = ''.join('{0:08b}'.format(ord(x), 'b') for x in T)
+    binary_str = "{0:b}".format(int(binary_str, 2)+1)
+    if len(binary_str) < 128:
+        while(len(binary_str) != 128):
+            binary_str = '0' + binary_str
+    i = 0
+    bytes_lst = []
+    print len(binary_str)
+    while i < 128:
+        # print binary_str[i:i+8]
+        bytes_lst.append(int(binary_str[i:i+8],2))
+        i = i + 8
+    T = ''.join(map(chr,bytes_lst))
+
+# print "length of the plaintext ",len(message)
+# cipher_text = EME_E(T,K, message)
+# print "cipher_text is ", cipher_text
 print "len of cipher ", len(cipher_text)
 print "length of cipher_text is ", len(cipher_text)
-
+tmp = cipher_text
 for j in range(0, height):
     for i in range(0, width):
         image[j][i] = [ord(cipher_text[0])/255.0, ord(cipher_text[1])/255.0, ord(cipher_text[2])/255.0, ord(cipher_text[3])/255.0]
@@ -252,7 +279,32 @@ for j in range(0, height):
             # print bytearray(int(round(k * 255.0)))
             message = message + str(bytearray([int(round(k * 255.0))]))
 
-decipered_text = EME_D(T,K,message)
+decipered_text = ""
+index = 0 
+while index < len(tmp):
+    if index + 16*128 > len(tmp):
+         decipered_text = decipered_text + EME_D(T_copy,K,tmp[index:len(tmp)])
+         print "break here"
+         break
+    decipered_text = decipered_text + EME_D(T_copy,K,tmp[index:index+16*128])
+    print index
+    index = index + 16*128
+
+    binary_str = ''.join('{0:08b}'.format(ord(x), 'b') for x in T_copy)
+    binary_str = "{0:b}".format(int(binary_str, 2)+1)
+    if len(binary_str) < 128:
+        while(len(binary_str) != 128):
+            binary_str = '0' + binary_str
+    i = 0
+    bytes_lst = []
+    print len(binary_str)
+    while i < 128:
+        # print binary_str[i:i+8]
+        bytes_lst.append(int(binary_str[i:i+8],2))
+        i = i + 8
+    T_copy = ''.join(map(chr,bytes_lst))
+
+# decipered_text = EME_D(T,K,message)
 print "deciphered text is ", decipered_text
 print "len of decipher ", len(decipered_text)
 
