@@ -14,3 +14,9 @@ python image_decrypt.py [Key of 128 bits] [Tweak of 128 bits] [Image Path]
 Reference:
 
 The Full paper covering Enciphering Algorithm: http://web.cs.ucdavis.edu/~rogaway/papers/eme.pdf
+
+Original image: ![alt tag](https://github.com/RuiqingQiu/CSE191-Format-Preserved-Encryption/blob/master/test9.png) 
+
+Encrypted image: ![alt tag](https://github.com/RuiqingQiu/CSE191-Format-Preserved-Encryption/blob/master/complete/encrypt.png)
+
+Decrypted image: ![alt tag](https://github.com/RuiqingQiu/CSE191-Format-Preserved-Encryption/blob/master/complete/decrypt.png)
